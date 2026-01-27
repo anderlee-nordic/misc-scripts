@@ -1,0 +1,43 @@
+#!/bin/bash
+
+# Configuration
+IMAGE_NAME="docker-dtr.nordicsemi.no/sw-production/ncs-test:latest"
+VOLUME_NAME="docker-python-packages"
+PACKAGES_PATH="/usr/local/lib/python3.12/site-packages/"
+CONTAINER_NAME="ncs-test-temp"
+SYMLINK_PATH="$HOME/container-packages"
+
+echo "🔄 Pulling latest image..."
+docker pull $IMAGE_NAME
+IMAGE_VER=$(docker image inspect --format '{{json .Config.Labels.VER}}' $IMAGE_NAME)
+
+echo "🛑 Stopping old container if running..."
+docker stop $CONTAINER_NAME
+
+echo "🗑️  Removing old volume..."
+docker volume rm $VOLUME_NAME
+
+echo "📦 Starting container..."
+docker run --rm \
+  --name $CONTAINER_NAME \
+  -v $VOLUME_NAME:$PACKAGES_PATH \
+  $IMAGE_NAME \
+
+echo "🔗 Getting volume mount path..."
+MOUNT_PATH=$(docker volume inspect $VOLUME_NAME --format='{{.Mountpoint}}')
+
+echo "🔗 Creating symlink..."
+if [ -L "$SYMLINK_PATH" ]; then
+  rm $SYMLINK_PATH
+fi
+ln -s $MOUNT_PATH $SYMLINK_PATH
+
+echo "✅ Done!"
+echo ""
+echo "Image version: ${IMAGE_VER//\"/}"
+echo "Volume: $VOLUME_NAME"
+echo "Mount point: $MOUNT_PATH"
+echo "Symlink: $SYMLINK_PATH"
+echo ""
+echo "Configure Pyright with:"
+echo '  "extraPaths": ["~/container-packages"]'
