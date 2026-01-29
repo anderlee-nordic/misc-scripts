@@ -18,10 +18,11 @@ echo "🗑️  Removing old volume..."
 docker volume rm $VOLUME_NAME
 
 echo "📦 Starting container..."
-docker run --rm \
+docker run -d --rm \
   --name $CONTAINER_NAME \
   -v $VOLUME_NAME:$PACKAGES_PATH \
   $IMAGE_NAME \
+  tail -f /dev/null
 
 echo "🔗 Getting volume mount path..."
 MOUNT_PATH=$(docker volume inspect $VOLUME_NAME --format='{{.Mountpoint}}')
