@@ -29,9 +29,9 @@ MOUNT_PATH=$(docker volume inspect $VOLUME_NAME --format='{{.Mountpoint}}')
 
 echo "🔗 Creating symlink..."
 if [ -L "$SYMLINK_PATH" ]; then
-  rm $SYMLINK_PATH
+  rm "$SYMLINK_PATH"
 fi
-ln -s $MOUNT_PATH $SYMLINK_PATH
+ln -s "$MOUNT_PATH" "$SYMLINK_PATH"
 
 echo "✅ Done!"
 echo ""
