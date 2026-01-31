@@ -201,8 +201,10 @@ class VPNIndicator:
             return False
 
         self.is_busy = True
-        self.status_item.set_label("⟳ Updating...")
         self.indicator.set_icon_full("emblem-synchronizing-symbolic", "Updating VPN Status")
+        self.status_item.set_label("⟳ Updating...")
+        self.connect_item.set_sensitive(False)
+        self.disconnect_item.set_sensitive(False)
         self.run_command_async("status", self.on_status_complete)
         return False
 
