@@ -10,12 +10,9 @@ import sys
 import os
 
 
-PORTAL = "vpn.nordicsemi.no"
 APP_ID = "globalprotect-vpn-indicator"
-
 # Path to vpn_gp script (adjust if needed)
-VPN_CLI = "/home/anle/misc-scripts/vpn_gp"
-
+VPN_CLI = "vpn_gp"
 # Update interval in milliseconds
 UPDATE_INTERVAL = 10000
 
@@ -118,7 +115,7 @@ class VPNIndicator:
         """Run a vpn_gp command asynchronously."""
         try:
             proc = Gio.Subprocess.new(
-                [VPN_CLI, command],
+                [VPN_CLI, command, "-v" if command == "status" else ""] ,
                 Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE
             )
             proc.communicate_utf8_async(None, None, callback, command)
@@ -153,6 +150,10 @@ class VPNIndicator:
         """Apply status based on command output."""
         if "Connected" in output:
             status = "connected"
+            gw = next(l.split(":",1)[1].strip() for l in output.splitlines() \
+                if l.startswith("Gateway Name:"))
+            uptime = int(next(l.split(":",1)[1] for l in output.splitlines() \
+                if l.startswith("Uptime(sec):")))
         elif "Disconnected" in output:
             status = "disconnected"
         elif "Connecting" in output:
@@ -166,7 +167,7 @@ class VPNIndicator:
 
         if status == "connected":
             self.indicator.set_icon_full("network-vpn-symbolic", "VPN Connected")
-            self.status_item.set_label(f"✓ Connected to {PORTAL}")
+            self.status_item.set_label(f"✓ Connected\nGW: {gw}\nUptime(s): {uptime}")
             self.connect_item.set_sensitive(False)
             self.disconnect_item.set_sensitive(True)
         elif status == "disconnected":
