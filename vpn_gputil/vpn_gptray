@@ -154,6 +154,7 @@ class VPNIndicator:
                 if l.startswith("Gateway Name:"))
             uptime = int(next(l.split(":",1)[1] for l in output.splitlines() \
                 if l.startswith("Uptime(sec):")))
+            uptime_pretty = f"{uptime//60} min {uptime%60} sec"
         elif "Disconnected" in output:
             status = "disconnected"
         elif "Connecting" in output:
@@ -167,7 +168,7 @@ class VPNIndicator:
 
         if status == "connected":
             self.indicator.set_icon_full("network-vpn-symbolic", "VPN Connected")
-            self.status_item.set_label(f"✓ Connected\nGW: {gw}\nUptime(s): {uptime}")
+            self.status_item.set_label(f"✓ Connected\nGW: {gw}\nUptime: {uptime_pretty}")
             self.connect_item.set_sensitive(False)
             self.disconnect_item.set_sensitive(True)
         elif status == "disconnected":
