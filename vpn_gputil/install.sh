@@ -9,16 +9,26 @@ PY_LINK="/usr/local/bin/${PY_SCRIPT}"
 BASH_LINK="/usr/local/bin/${BASH_SCRIPT}"
 # --------------------------------------
 
+# Colors
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
 # Check GlobalProtect CLI exists in PATH
 if ! which globalprotect >/dev/null 2>&1; then
-  echo "Error: globalprotect not found in PATH. Install GlobalProtect CLI first." >&2
+  echo -e "${RED}Error: globalprotect not found in PATH. Install GlobalProtect CLI first.${NC}" >&2
   exit 1
 fi
 
 if [[ $EUID -ne 0 ]]; then
-  echo "Please run as root: sudo $0"
+  echo -e "${YELLOW}Please run as root: sudo $0${NC}"
   exit 1
 fi
+
+# Install dependencies
+apt-get update
+apt-get install -y python3-gi
 
 mkdir -p "${INSTALL_DIR}"
 
@@ -27,4 +37,4 @@ install -p "${PY_SCRIPT}" "${INSTALL_DIR}/"
 install -p "${BASH_SCRIPT}" "${INSTALL_DIR}/"
 ln -sfn "${INSTALL_DIR}/${PY_SCRIPT}" "${PY_LINK}"
 ln -sfn "${INSTALL_DIR}/${BASH_SCRIPT}" "${BASH_LINK}"
-echo "${BASH_SCRIPT} and ${PY_SCRIPT} have been installed to: ${INSTALL_DIR}"
+echo -e "${GREEN}${BASH_SCRIPT} and ${PY_SCRIPT} have been installed to: ${INSTALL_DIR}${NC}"
