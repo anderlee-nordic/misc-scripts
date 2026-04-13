@@ -1,5 +1,7 @@
 #!/usr/bin/env perl
-# Usage  ./clean-ansi < raw.log | less -R
+# Purpose: clean up and restore the escape sequences in a log file and display
+#          in a pretty pager
+# Usage: ./clean-ansi < raw.log | less -R
 
 while (<STDIN>) {
     my $i = 0;

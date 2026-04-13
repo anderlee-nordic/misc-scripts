@@ -1,3 +1,4 @@
+# Show how formatted texts would look like in the current terminal
 echo ""
 echo "=== Basic ANSI Colors with Names ==="
 echo -e "\e[30m Black (30) \e[0m"
