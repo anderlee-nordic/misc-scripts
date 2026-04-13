@@ -1,0 +1,17 @@
+#!/usr/bin/env perl
+# Usage  ./clean-ansi < raw.log | less -R
+
+while (<STDIN>) {
+    my $i = 0;
+    my @saved;
+    while (s/(?:\xe2\x90\x9b|\xc2\x9b|\x1b)\[([0-9;]*[A-Za-z])/\x00KEEP${\ $i}\x00/) {
+        push @saved, $1;
+        $i++;
+    }
+    s/\xe2\x90\x9b//g;
+    s/\xef\xbf\xbd//g;
+    s/\xc2\x9b//g;
+    s/\x1b//g;
+    s/\x00KEEP(\d+)\x00/"\e[" . $saved[$1]/ge;
+    print;
+}
